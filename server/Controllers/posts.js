@@ -48,7 +48,9 @@ export const createComment = async (req, res) => {
 
     await post.createComment(userId, user.firstName, user.lastName, comment);
 
-    res.status(201).json(post.getComments());
+    // Renvoyez l'objet updatedPost directement
+    const updatedPost = await Post.findById(id);
+    res.status(201).json(updatedPost);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

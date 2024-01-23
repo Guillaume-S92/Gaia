@@ -33,16 +33,64 @@ export const authSlice = createSlice({
       state.posts = action.payload.posts;
     },
     setPost: (state, action) => {
-      const updatedPosts = state.posts.map((post) => {
-        if (post._id === action.payload.post._id) return action.payload.post;
-        return post;
+      const { post } = action.payload;
+
+      const updatedPosts = state.posts.map((existingPost) => {
+        if (existingPost._id === post._id) {
+          // Mettre à jour tous les champs du post, y compris les commentaires
+          return post;
+        }
+        return existingPost;
       });
+
       state.posts = updatedPosts;
     },
     removePost: (state, action) => {
       state.posts = state.posts.filter(
         (post) => post._id !== action.payload.postId
       );
+    },
+    setComments: (state, action) => {
+      const { postId, comments } = action.payload;
+
+      const updatedPosts = state.posts.map((post) => {
+        if (post._id === postId) {
+          // Mettre à jour les commentaires du post
+          post.comments = comments;
+        }
+        return post;
+      });
+
+      state.posts = updatedPosts;
+    },
+
+    addComment: (state, action) => {
+      const { postId, comment } = action.payload;
+      const updatedPosts = state.posts.map((post) => {
+        if (post._id === postId) {
+          return {
+            ...post,
+            comments: [...post.comments, comment],
+          };
+        }
+        return post;
+      });
+      state.posts = updatedPosts;
+    },
+    removeComment: (state, action) => {
+      const { postId, commentId } = action.payload;
+      const updatedPosts = state.posts.map((post) => {
+        if (post._id === postId) {
+          return {
+            ...post,
+            comments: post.comments.filter(
+              (comment) => comment._id !== commentId
+            ),
+          };
+        }
+        return post;
+      });
+      state.posts = updatedPosts;
     },
   },
 });
@@ -55,5 +103,9 @@ export const {
   setPosts,
   setPost,
   removePost,
+  setComments,
+  addComment,
+  removeComment,
 } = authSlice.actions;
+
 export default authSlice.reducer;
